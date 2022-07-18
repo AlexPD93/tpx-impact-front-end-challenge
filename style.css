@@ -4,7 +4,7 @@ body {
 }
 
 .stopwatch {
-  padding-top: 3em;
+  padding-top: 1.5em;
   text-align: center;
   font-size: 4em;
   margin-bottom: 1.5rem;
@@ -40,6 +40,8 @@ button:hover {
   background-color: #3b4044;
 }
 
-#lapContainer {
+#lapList {
   text-align: center;
+  list-style-type: none;
+  padding: 0;
 }
