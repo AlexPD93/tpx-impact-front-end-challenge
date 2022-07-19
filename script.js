@@ -1,33 +1,37 @@
 const timer = document.getElementById("stopwatch");
+const startButton = document.getElementById("startButton");
+
 let lapNumber = 0;
 
-let hour = 0;
-let min = 0;
-let sec = 0;
-let milisecond = 0;
+let [hour, min, sec, centisecond] = [0, 0, 0, 0];
+
 let stopTime = true;
 
-function startTimer() {
-  stopTime = false;
-  timerCycle();
-}
+let [lapHour, lapMin, lapSec, lapCentiSec] = [0, 0, 0, 0];
 
-function stopTimer() {
-  stopTime = true;
+function startTimer() {
+  if (startButton.innerText === "Start") {
+    startButton.innerText = "Stop";
+    stopTime = false;
+    timerCycle();
+  } else if (startButton.innerText === "Stop") {
+    startButton.innerText = "Start";
+    stopTime = true;
+  }
 }
 
 function timerCycle() {
   if (stopTime == false) {
-    milisecond = parseInt(milisecond);
+    centisecond = parseInt(centisecond);
     sec = parseInt(sec);
     min = parseInt(min);
     hour = parseInt(hour);
 
-    milisecond = milisecond + 1;
+    centisecond = centisecond + 1;
 
-    if (milisecond == 100) {
+    if (centisecond == 100) {
       sec = sec + 1;
-      milisecond = 0;
+      centisecond = 0;
     }
 
     if (sec == 60) {
@@ -40,8 +44,8 @@ function timerCycle() {
       min = 0;
       sec = 0;
     }
-    if (milisecond < 10 || milisecond == 0) {
-      milisecond = "0" + milisecond;
+    if (centisecond < 10 || centisecond == 0) {
+      centisecond = "0" + centisecond;
     }
 
     if (sec < 10 || sec == 0) {
@@ -53,31 +57,40 @@ function timerCycle() {
     if (hour < 10 || hour == 0) {
       hour = "0" + hour;
     }
-    timer.innerHTML = `${hour}:${min}:${sec}:${milisecond}`;
+    timer.innerHTML = `${hour}:${min}:${sec}:${centisecond}`;
+    setLocalStorage(hour, min, sec, centisecond);
     setTimeout("timerCycle()", 10);
   }
 }
 
+function setLocalStorage(hour, min, sec, centisecond) {}
+
 function lapTime() {
-  const lapContainer = document.getElementById("lapContainer");
-  const lapDisplay = document.createElement("p");
-  lapDisplay.className = "lap-time";
+  const lapContainer = document.querySelector("#lapList");
+  const laps = document.createElement("li");
+  laps.className = "lap-time";
 
-  lapNumber++;
+  if (timer.innerHTML === "00:00:00:00") {
+    laps.innerHTML = "Please press start.";
+    lapContainer.appendChild(laps);
+  } else {
+    const pressStart = Array.from(document.getElementsByClassName("lap-time"));
 
-  lapDisplay.innerHTML = `${lapNumber}: ${timer.innerHTML}`;
-  lapContainer.appendChild(lapDisplay);
-}
+    pressStart.forEach((text) => {
+      if (text.innerHTML === "Please press start.") {
+        text.remove();
+      }
+    });
+    lapNumber++;
 
-function clearLapHistory() {
-  lapNumber = 0;
-  const lapTimes = Array.from(document.getElementsByClassName("lap-time"));
-  lapTimes.forEach((time) => {
-    time.remove();
-  });
+    laps.innerHTML = `${lapNumber}:  ${timer.innerHTML}`;
+
+    lapContainer.appendChild(laps);
+  }
 }
 
 function resetTimer() {
+  startButton.innerText = "Start";
   lapNumber = 0;
   const lapTimes = Array.from(document.getElementsByClassName("lap-time"));
   lapTimes.forEach((time) => {
@@ -85,8 +98,20 @@ function resetTimer() {
   });
   timer.innerHTML = "00:00:00:00";
   stopTime = true;
-  milisecond = 0;
+  centisecond = 0;
   sec = 0;
   min = 0;
   hour = 0;
 }
+
+document.querySelector("#startButton").addEventListener("click", () => {
+  startTimer();
+});
+
+document.querySelector("#lapButton").addEventListener("click", () => {
+  lapTime();
+});
+
+document.querySelector("#resetButton").addEventListener("click", () => {
+  resetTimer();
+});
