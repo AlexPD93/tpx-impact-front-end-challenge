@@ -22,6 +22,7 @@ function startTimer() {
 
 function timerCycle() {
   if (stopTime == false) {
+    // Set timings to numbers
     centisecond = parseInt(centisecond);
     sec = parseInt(sec);
     min = parseInt(min);
@@ -58,39 +59,61 @@ function timerCycle() {
       hour = "0" + hour;
     }
     timer.innerHTML = `${hour}:${min}:${sec}:${centisecond}`;
-    setLocalStorage(hour, min, sec, centisecond);
+
     setTimeout("timerCycle()", 10);
   }
 }
 
-function setLocalStorage(hour, min, sec, centisecond) {}
-
 function lapTime() {
+  lapNumber++;
+  const lapTimes = `${lapNumber}:  ${timer.innerHTML}`;
+
+  setLocalStorage("laps", lapTimes);
+}
+
+function setLocalStorage(key, data) {
+  const lapTimes = JSON.parse(localStorage.getItem(key)) || [];
+  lapTimes.push(data);
+  localStorage.setItem(key, JSON.stringify(lapTimes));
+  displayLaps(lapTimes);
+}
+
+function displayLaps(lapTimes) {
   const lapContainer = document.querySelector("#lapList");
   const laps = document.createElement("li");
   laps.className = "lap-time";
-
   if (timer.innerHTML === "00:00:00:00") {
     laps.innerHTML = "Please press start.";
     lapContainer.appendChild(laps);
+    return;
   } else {
     const pressStart = Array.from(document.getElementsByClassName("lap-time"));
-
     pressStart.forEach((text) => {
       if (text.innerHTML === "Please press start.") {
         text.remove();
       }
     });
-    lapNumber++;
-
-    laps.innerHTML = `${lapNumber}:  ${timer.innerHTML}`;
-
-    lapContainer.appendChild(laps);
   }
+  lapTimes.forEach((lapTime) => {
+    laps.innerHTML = lapTime;
+  });
+  lapContainer.appendChild(laps);
 }
+
+window.onload = function () {
+  const savedLaps = JSON.parse(localStorage.getItem("laps"));
+  const lapContainer = document.querySelector("#lapList");
+
+  savedLaps.forEach((lapTime) => {
+    const laps = document.createElement("li");
+    laps.innerHTML = lapTime;
+    lapContainer.appendChild(laps);
+  });
+};
 
 function resetTimer() {
   startButton.innerText = "Start";
+  localStorage.clear();
   lapNumber = 0;
   const lapTimes = Array.from(document.getElementsByClassName("lap-time"));
   lapTimes.forEach((time) => {
@@ -108,7 +131,7 @@ document.querySelector("#startButton").addEventListener("click", () => {
   startTimer();
 });
 
-document.querySelector("#lapButton").addEventListener("click", () => {
+document.querySelector("#lapButton").addEventListener("click", (e) => {
   lapTime();
 });
 
