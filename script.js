@@ -100,7 +100,7 @@ function displayLaps(lapTimes) {
   lapContainer.appendChild(laps);
 }
 
-window.onload = function () {
+document.addEventListener("DOMContentLoaded", () => {
   const savedLaps = JSON.parse(localStorage.getItem("laps"));
   const lapContainer = document.querySelector("#lapList");
 
@@ -109,11 +109,11 @@ window.onload = function () {
     laps.innerHTML = lapTime;
     lapContainer.appendChild(laps);
   });
-};
+});
 
 function resetTimer() {
   startButton.innerText = "Start";
-  localStorage.clear();
+
   lapNumber = 0;
   const lapTimes = Array.from(document.getElementsByClassName("lap-time"));
   lapTimes.forEach((time) => {
@@ -137,4 +137,6 @@ document.querySelector("#lapButton").addEventListener("click", (e) => {
 
 document.querySelector("#resetButton").addEventListener("click", () => {
   resetTimer();
+  localStorage.removeItem("laps");
+  document.getElementById("lapList").innerHTML = "";
 });
