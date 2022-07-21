@@ -13,3 +13,7 @@ For this task you will create a HTML page with a functional stopwatch. The stopw
 * Make it look good
 * No bugs or quirky behaviour... (is keeping good time?)
 * Any build tools, instructions or other things you think a good project should include
+
+## What I would improve 
+
+* Make the stopwatch do an actual lap time rather than displaying the time when lap is pressed. 
