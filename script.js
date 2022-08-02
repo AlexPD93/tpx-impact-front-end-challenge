@@ -100,14 +100,16 @@ function displayLaps(lapTimes) {
   }
 
   if (lapTimes[1] === undefined) {
-    laps.innerHTML = `${lapNumber}: ${msToStr(
-      strToMs(timer.innerHTML) - strToMs("00:00:00:00")
+    laps.innerHTML = `${lapNumber}: ${msToString(
+      strToMillisecond(timer.innerHTML) - strToMillisecond("00:00:00:00")
     )}`;
+
     lapContainer.appendChild(laps);
   } else if (lapTimes.length > 1) {
     for (let i = 1; i < lapTimesArray.length; i++) {
-      laps.innerHTML = `${lapNumber}: ${msToStr(
-        strToMs(lapTimesArray[i]) - strToMs(lapTimesArray[i - 1])
+      laps.innerHTML = `${lapNumber}: ${msToString(
+        strToMillisecond(lapTimesArray[i]) -
+          strToMillisecond(lapTimesArray[i - 1])
       )}`;
     }
   }
@@ -115,7 +117,7 @@ function displayLaps(lapTimes) {
   lapContainer.appendChild(laps);
 }
 
-function strToMs(s) {
+function strToMillisecond(s) {
   const splitStr = s.split(":");
 
   return (
@@ -126,7 +128,7 @@ function strToMs(s) {
   );
 }
 
-function msToStr(ms) {
+function msToString(ms) {
   let hour = Math.floor(ms / 3600000);
   let min = Math.floor((ms / 3600000 - hour) * 60);
   let sec = Math.floor(((ms / 3600000 - hour) * 60 - min) * 60);
@@ -135,7 +137,7 @@ function msToStr(ms) {
   let h = hour < 10 ? "0" + hour : hour;
   let m = min < 10 ? "0" + min : min;
   let s = sec < 10 ? "0" + sec : sec;
-  let msecs = msec < 10 ? "00" + msec : msec < 100 ? "0" + msec : msec;
+  let msecs = msec < 10 ? "0" + msec : msec;
 
   return h + ":" + m + ":" + s + ":" + msecs;
 }
@@ -144,11 +146,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const savedLaps = JSON.parse(localStorage.getItem("laps"));
   const lapContainer = document.querySelector("#lapList");
 
-  savedLaps.forEach((lapTime) => {
-    const laps = document.createElement("li");
-    laps.innerHTML = lapTime;
-    lapContainer.appendChild(laps);
-  });
+  if (savedLaps) {
+    savedLaps.forEach((lapTime) => {
+      const laps = document.createElement("li");
+      laps.innerHTML = lapTime;
+      lapContainer.appendChild(laps);
+    });
+  } else {
+    return;
+  }
 });
 
 function resetTimer() {
