@@ -9,7 +9,9 @@ let stopTime = true;
 
 let [lapHour, lapMin, lapSec, lapCentiSec] = [0, 0, 0, 0];
 
-function startTimer(start, stop) {
+let lapStringArray = [];
+
+function startTimer() {
   if (startButton.innerText === "Start") {
     startButton.innerText = "Stop";
     stopTime = false;
@@ -65,23 +67,25 @@ function timerCycle() {
   }
 }
 
-function lapTime() {
-  lapNumber++;
-  const lapTimes = `${lapNumber}:  ${timer.innerHTML}`;
+// function lapTime() {
+//   const lapTimes = `${lapNumber}:  ${timer.innerHTML}`;
 
-  setLocalStorage("laps", lapTimes);
-}
+//   setLocalStorage("laps", lapTimes);
+// }
 
 function setLocalStorage(key, data) {
+  console.log(data);
+  // Parse turns a string into an object
   const lapTimes = JSON.parse(localStorage.getItem(key)) || [];
   lapTimes.push(data);
+
+  // Stringify turns an object into a string.
   localStorage.setItem(key, JSON.stringify(lapTimes));
-  displayLaps(lapTimes);
 }
 
 let lapTimesArray = [];
 
-function displayLaps(lapTimes) {
+function displayLaps() {
   const lapContainer = document.querySelector("#lapList");
   const laps = document.createElement("li");
   laps.className = "lap-time";
@@ -99,25 +103,26 @@ function displayLaps(lapTimes) {
     });
   }
 
-  if (lapTimes[1] === undefined) {
-    laps.innerHTML = `${lapNumber}: ${msToString(
+  if (lapTimesArray.length === 1) {
+    laps.textContent = `${lapNumber}: ${msToString(
       strToMillisecond(timer.innerHTML) - strToMillisecond("00:00:00:00")
     )}`;
-
-    lapContainer.appendChild(laps);
-  } else if (lapTimes.length > 1) {
+    setLocalStorage("laps", laps.textContent);
+  } else {
     for (let i = 1; i < lapTimesArray.length; i++) {
-      laps.innerHTML = `${lapNumber}: ${msToString(
+      laps.textContent = `${lapNumber}: ${msToString(
         strToMillisecond(lapTimesArray[i]) -
           strToMillisecond(lapTimesArray[i - 1])
       )}`;
     }
+    setLocalStorage("laps", laps.textContent);
   }
 
-  lapContainer.appendChild(laps);
+  lapContainer.append(laps);
 }
 
 function strToMillisecond(s) {
+  // Turns string from timer display into numbers. So they can be used for calculations.
   const splitStr = s.split(":");
 
   return (
@@ -129,6 +134,7 @@ function strToMillisecond(s) {
 }
 
 function msToString(ms) {
+  // Making miliseconds more readable for the user.
   let hour = Math.floor(ms / 3600000);
   let min = Math.floor((ms / 3600000 - hour) * 60);
   let sec = Math.floor(((ms / 3600000 - hour) * 60 - min) * 60);
@@ -174,13 +180,12 @@ function resetTimer() {
 }
 
 document.querySelector("#startButton").addEventListener("click", () => {
-  const start = Date.now();
-  const stop = Date.now();
-  startTimer(start, stop);
+  startTimer();
 });
 
 document.querySelector("#lapButton").addEventListener("click", (e) => {
-  lapTime();
+  lapNumber++;
+  displayLaps();
 });
 
 document.querySelector("#resetButton").addEventListener("click", () => {
