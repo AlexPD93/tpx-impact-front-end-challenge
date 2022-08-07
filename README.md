@@ -12,5 +12,4 @@ For this task you will create a HTML page with a functional stopwatch. The stopw
 * Clear lap history button: A button to clear any lap history
 * Make it look good
 * No bugs or quirky behaviour... (is keeping good time?)
-* Any build tools, instructions or other things you think a good project should include
 
